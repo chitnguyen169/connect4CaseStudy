@@ -49,7 +49,6 @@ def ws_receive(message):
                 game.status = 'Concluded'
                 game.winner = current_player.username
                 game.save()
-
         else:
             raise ValueError("Can not make 2 moves in a row")
         if game.winner:

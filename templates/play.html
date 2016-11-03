@@ -28,11 +28,122 @@
     <div id="board">
     </div>
 
+{#    Create different modal boxes to display alert#}
+    <div id="alert-win" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Game is finished!</h4>
+            </div>
+            <div class="modal-body">
+                <p>Congratulations! You won!!!</p>
+                <p>Join another game and play again now?</p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-primary" href="/connect4/games/" role="button">Yes</a>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="alert-lose" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Game is finished!</h4>
+            </div>
+            <div class="modal-body">
+                <p>Sorry :( You lost!</p>
+                <p>Join another game and play again now?</p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-primary" href="/connect4/games/" role="button">Yes</a>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="alert-draw" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Game is finished!</h4>
+            </div>
+            <div class="modal-body">
+                <p>Hmmm it's a draw</p>
+                <p>Let's try again!</p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-primary" href="/connect4/games/" role="button">Yes</a>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="alert-warning-two-moves" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Warning!</h4>
+            </div>
+            <div class="modal-body">
+                <p>You cannot make 2 moves in a row! Please wait for your friend to move.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="alert-warning-invalid-move" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Warning!</h4>
+            </div>
+            <div class="modal-body">
+                <p>You cannot put more coin in this column!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="alert-finished-game" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Finished Game</h4>
+            </div>
+            <div class="modal-body">
+                <p>Sorry, this game is already finished!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
     <script type="text/javascript">
         $(document).ready(function() {
             //Create a websocket
             var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
             var play_socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + window.location.pathname);
+
+            //Define all necessary variables
             var current_player = {{ request.user.id }};
             var current_player_name = "{{ request.user.username }}";
             var player1 = {{ game.player1.id }};
@@ -41,7 +152,11 @@
             var players = {{ player_turns }};
             var rows = {{ rows }};
             var cols = {{ cols }};
+            //Status is value which sent to server after each move along with row, col, winner, current_player
             var status = $("#status").val();
+
+            //Get last move from our model and display it with solid border so user can easily keep track
+            //If there is no last move (i.e. new game) then we set last_move_player id = -1 to initialise & avoid error
             {% if last_move %}
                 var last_move_row = {{ last_move.row }};
                 var last_move_col = {{ last_move.column }};
@@ -52,8 +167,14 @@
             {% else %}
                 var last_move_player = -1;
             {% endif %}
+
+            // Intialise 6x7 board with 0 entries
             prepareField();
+
+            // Update entries in 6x7 board with all updated moves.
             updateCurrentField(players, rows, cols, player1);
+
+            // Most updated move message via Websocket
             play_socket.onmessage = function(message) {
                 var last_move = JSON.parse(message.data);
                 var last_move_row = last_move.row;
@@ -62,55 +183,62 @@
                 var last_move_winner = last_move.winner;
                 last_move_player = last_move.current_player;
                 placeCoin(last_move_player, last_move_row, last_move_col, player1);
+                // remove solid border for all previous move so later we can only display last_button as
+                // most current move with solid border
                 removeBorder();
                 var last_btn_id = "btn" + String(last_move_row) + String(last_move_col);
                 var last_button = document.getElementById(last_btn_id);
                 last_button.style.cssText += 'border: 5px solid #2c3e50';
+                //Display message:
+                // If we check for victory and it's true then status in message is "Concluded" and there is no winner
+                // then we check last_move player if it matches current then alert win else lost
                 if(last_move_status=='Concluded'){
                     if (last_move_winner != 'Draw'){
                         if(last_move_winner == current_player_name){
-                            alert('You Win!');
+                            $('#alert-win').modal('show');
                         } else if (last_move_winner != '') {
-                            alert('You lose!');
+                            $('#alert-lose').modal('show');
                         }
                     } else {
-                        alert('Draw Game!')
+                        $('#alert-draw').modal('show');
                     }
                 }
             };
 
-            function getCookie(name) {
-                var cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    var cookies = document.cookie.split(';');
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = jQuery.trim(cookies[i]);
-                        // Does this cookie string begin with the name we want?
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-            $.ajaxSetup({
-                headers: { "X-CSRFToken": getCookie("csrftoken") }
-            });
+{#            function getCookie(name) {#}
+{#                var cookieValue = null;#}
+{#                if (document.cookie && document.cookie !== '') {#}
+{#                    var cookies = document.cookie.split(';');#}
+{#                    for (var i = 0; i < cookies.length; i++) {#}
+{#                        var cookie = jQuery.trim(cookies[i]);#}
+{#                        // Does this cookie string begin with the name we want?#}
+{#                        if (cookie.substring(0, name.length + 1) === (name + '=')) {#}
+{#                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));#}
+{#                            break;#}
+{#                        }#}
+{#                    }#}
+{#                }#}
+{#                return cookieValue;#}
+{#            }#}
+{#            $.ajaxSetup({#}
+{#                headers: { "X-CSRFToken": getCookie("csrftoken") }#}
+{#            });#}
 
             $("#board tr td button").click(function(e) {
                 e.preventDefault();
+                // Only allows player1 and player2 to make moves not anyone else
                 if (current_player == player1 || current_player == player2) {
                     if (status != 'Concluded') {
                         if (current_player == last_move_player){
-                            alert('Can not make 2 moves in a row!')
+                             $('#alert-warning-two-moves').modal('show');
                         } else {
                             var col = $(this).data("col");
                             var row = firstFreeRow(col);
                             if (row == -1) {
-                                alert('You cannot put more coin in this column!');
+                                $('#alert-warning-invalid-move').modal('show');
                             } else {
                                 status = '';
+                                // If there is a winner, update status to Concluded
                                 if (checkForVictory(current_player, row, col)) {
                                     status = "Concluded";
                                 }
@@ -125,7 +253,7 @@
                             }
                         }
                     } else {
-                        alert('Game already finished!');
+                        $('#alert-finished-game').modal('show');
                     }
                 }
             });

@@ -11,42 +11,41 @@
         <!-- Custom CSS -->
 		<link href="{% static 'css/styles.css' %}" rel="stylesheet">
     </head>
-        <body>
-            <div class="navbar navbar-default" id="main-navigation">
-                <div class="container-fluid">
-                    <h2 class="navbar-header" href="#">Play Connect 4 Online</h2>
-                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                        <ul class="nav navbar-nav navbar-right">
-                            <ul class="nav nav-pills">
-                                <li role="presentation" class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" id="user-account">
-                                    {{ request.user.username }} <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">Settings</a></li>
-                                    <li role="separator" class="divider"></li>
-                                    <li><a href = '/connect4/logout/'>Log Out</a></li>
-                                </ul>
-                              </li>
+    <body>
+        <div class="navbar navbar-default" id="main-navigation">
+            <div class="container-fluid">
+                <h2 class="navbar-header" href="#">Play Connect 4 Online</h2>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <ul class="nav nav-pills">
+                            <li role="presentation" class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" id="user-account">
+                                {{ request.user.username }} <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Settings</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href = '/connect4/logout/'>Log Out</a></li>
                             </ul>
+                          </li>
                         </ul>
-                        <form method="post" action=".">
-                        {% csrf_token %}
-                            <center>
-                                <p class="bs-component">
-                                    <input class="btn btn-success btn-sm" id="create-game-btn" type="submit" value="Create Game" />
-                                </p>
-                            </center>
-                        </form>
-                    </div>
+                    </ul>
+                    <form method="post" action=".">
+                    {% csrf_token %}
+                        <center>
+                            <p class="bs-component">
+                                <input class="btn btn-success btn-sm" id="create-game-btn" type="submit" value="Create Game" />
+                            </p>
+                        </center>
+                    </form>
                 </div>
             </div>
-            {% block content %}{% endblock %}
+        </div>
+        {% block content %}{% endblock %}
 
-            <!-- Core Scripts - Include with every page -->
-            <script src = "{% static 'js/bootstrap.min.js' %}"></script>
-            <script src = "{% static 'js/reconnecting-websocket.min.js' %}"></script>
-            {% block javascript %}
-            {% endblock %}
-        </body>
+        <!-- Core Scripts - Include with every page -->
+        <script src = "{% static 'js/bootstrap.min.js' %}"></script>
+        <script src = "{% static 'js/reconnecting-websocket.min.js' %}"></script>
+        {% block javascript %}{% endblock %}
+    </body>
 </html>
