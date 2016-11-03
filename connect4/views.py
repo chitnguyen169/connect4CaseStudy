@@ -26,9 +26,11 @@ def login(request):
                 auth.login(request, user)
                 return redirect(games)
     # Method = GET then display log in form
+    else:
+        form = AuthenticationForm()
     args = {}
     args.update(csrf(request))
-    args['form'] = AuthenticationForm()
+    args['form'] = form
     return render(request, 'login.html', args)
 
 
@@ -54,9 +56,11 @@ def signup(request):
         if form.is_valid():
             form.save()
             return redirect(login)
+    else:
+        form = UserCreationForm()
     args = {}
     args.update(csrf(request))
-    args['form'] = UserCreationForm()
+    args['form'] = form
     return render(request, 'signup.html', args)
 
 
