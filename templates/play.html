@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+    {% if request.user.is_authenticated %}
+        <p class="bs-component">
+            <center>
+                <input class="btn btn-success btn-sm" onclick="location.href = '/connect4/games/';"type="submit" value="Back to Games Page" />
+            </center>
+        </p>
+    {% endif %}
+    <div class="col-md-3">
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="font-weight: 700">You are in game #{{ game.id }}</div>
+                {% if request.user.id == game.player1.id %}
+                    <p><b>Your color</b>: <div class="circle_red"></div></p>
+                {% else %}
+                    <p><b>Your color</b>: <div class="circle_yellow"></div></p>
+                {% endif %}
+                <p><b>Players</b>: {{ game.player1.username }} vs. {{ game.player2.username }}</p>
+                <p><b>Game status</b>: {{ game.status }}</p>
+                <p><b>Winner</b>: {{ game.winner }}</p>
+                <input type="hidden" id="status" name="status" value="{{ game.status }}">
+        </div>
+    </div>
+    <script src = "{% static 'js/play.js' %}"></script>
+
+    <div id="board">
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            //Create a websocket
+            var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+            var play_socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + window.location.pathname);
+            var current_player = {{ request.user.id }};
+            var current_player_name = "{{ request.user.username }}";
+            var player1 = {{ game.player1.id }};
+            var player2 = {{ game.player2.id }};
+            var winner = "{{ game.winner }}";
+            var players = {{ player_turns }};
+            var rows = {{ rows }};
+            var cols = {{ cols }};
+            var status = $("#status").val();
+            {% if last_move %}
+                var last_move_row = {{ last_move.row }};
+                var last_move_col = {{ last_move.column }};
+                var last_move_player = {{ last_move.player.id }};
+                var last_btn_id = "btn" + last_move_row + last_move_col;
+                var last_button = document.getElementById(last_btn_id);
+                last_button.style.cssText += 'border: 5px solid #2c3e50';
+            {% else %}
+                var last_move_player = -1;
+            {% endif %}
+            prepareField();
+            updateCurrentField(players, rows, cols, player1);
+            play_socket.onmessage = function(message) {
+                var last_move = JSON.parse(message.data);
+                var last_move_row = last_move.row;
+                var last_move_col = last_move.col;
+                var last_move_status = last_move.status;
+                var last_move_winner = last_move.winner;
+                last_move_player = last_move.current_player;
+                placeCoin(last_move_player, last_move_row, last_move_col, player1);
+                removeBorder();
+                var last_btn_id = "btn" + String(last_move_row) + String(last_move_col);
+                var last_button = document.getElementById(last_btn_id);
+                last_button.style.cssText += 'border: 5px solid #2c3e50';
+                if(last_move_status=='Concluded'){
+                    if (last_move_winner != 'Draw'){
+                        if(last_move_winner == current_player_name){
+                            alert('You Win!');
+                        } else if (last_move_winner != '') {
+                            alert('You lose!');
+                        }
+                    } else {
+                        alert('Draw Game!')
+                    }
+                }
+            };
+
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": getCookie("csrftoken") }
+            });
+
+            $("#board tr td button").click(function(e) {
+                e.preventDefault();
+                if (current_player == player1 || current_player == player2) {
+                    if (status != 'Concluded') {
+                        if (current_player == last_move_player){
+                            alert('Can not make 2 moves in a row!')
+                        } else {
+                            var col = $(this).data("col");
+                            var row = firstFreeRow(col);
+                            if (row == -1) {
+                                alert('You cannot put more coin in this column!');
+                            } else {
+                                status = '';
+                                if (checkForVictory(current_player, row, col)) {
+                                    status = "Concluded";
+                                }
+                                var message = {
+                                    row: row,
+                                    col: col,
+                                    status: status,
+                                    current_player: current_player,
+                                    winner: ''
+                                };
+                                play_socket.send(JSON.stringify(message));
+                            }
+                        }
+                    } else {
+                        alert('Game already finished!');
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+    {% if not request.user.is_authenticated %}
+        $("#create-game-btn").hide();
+        $("#user-account").hide();
+    {% endif %}
+</script>
+{% endblock %}

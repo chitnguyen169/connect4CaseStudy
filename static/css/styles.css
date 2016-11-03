@@ -1,0 +1,72 @@
+#main-navigation {
+    background-color: #34495e;
+}
+#main-navigation h2{
+	font-family: 'Raleway', sans-serif;
+    color: #ecf0f1;
+    margin-left: 475px;
+}
+
+#user-account{
+    margin-top: 12px;
+    color: #e67e22;
+}
+
+#create-game-btn {
+    margin-top: 20px;
+    margin-left: 250px;
+}
+/*CSS for input boxes in log in and sign up*/
+#sign-up-form input {
+    border-radius: 8px;
+    width: 200px;
+    height: 28px;
+    border: none;
+}
+
+#log-in-form input {
+    border-radius: 8px;
+    width: 200px;
+    height: 28px;
+    border: none;
+    margin-left: 40px;
+}
+
+
+table#board {
+  margin-left: 368px;
+  width:550px;
+  height:550px;
+  background-color: #27ae60;
+}
+
+table#board button.btn {
+  border-radius:46px;
+  border: 1px solid black;
+  width:75px;
+  height:75px;
+  margin-left: 2px;
+  background-color: #ecf0f1;
+  outline-style: none;
+}
+
+/*display color for user in play*/
+.circle_red {
+    width:1%;
+    padding:10px 11px;
+    border:1px solid black;
+    border-radius:25px;
+    background-color:red;
+    margin-top: -30px;
+    margin-left: 80px;
+}
+
+.circle_yellow {
+    width:1%;
+    padding:10px 11px;
+    border:1px solid black;
+    border-radius:25px;
+    background-color:yellow;
+    margin-top: -30px;
+    margin-left: 80px;
+}
