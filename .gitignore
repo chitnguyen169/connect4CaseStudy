@@ -74,3 +74,4 @@ target/
 .DS_Store
 .env
 *.sqlite3
+dump.rdb

@@ -20,7 +20,6 @@
                 <p><b>Players</b>: {{ game.player1.username }} vs. {{ game.player2.username }}</p>
                 <p><b>Game status</b>: {{ game.status }}</p>
                 <p><b>Winner</b>: {{ game.winner }}</p>
-                <input type="hidden" id="status" name="status" value="{{ game.status }}">
         </div>
     </div>
     <script src = "{% static 'js/play.js' %}"></script>
@@ -143,7 +142,7 @@
             var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
             var play_socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + window.location.pathname);
 
-            //Define all necessary variables
+            //Define all necessary variables when RELOADING page
             var current_player = {{ request.user.id }};
             var current_player_name = "{{ request.user.username }}";
             var player1 = {{ game.player1.id }};
@@ -152,11 +151,11 @@
             var players = {{ player_turns }};
             var rows = {{ rows }};
             var cols = {{ cols }};
-            //Status is value which sent to server after each move along with row, col, winner, current_player
-            var status = $("#status").val();
+            var status = "{{ game.status }}";
 
             //Get last move from our model and display it with solid border so user can easily keep track
-            //If there is no last move (i.e. new game) then we set last_move_player id = -1 to initialise & avoid error
+            //If there is no last move (i.e. new game) then we set last_move_player id = -1 to initialise & allow first
+            //player always moves
             {% if last_move %}
                 var last_move_row = {{ last_move.row }};
                 var last_move_col = {{ last_move.column }};
@@ -174,7 +173,7 @@
             // Update entries in 6x7 board with all updated moves.
             updateCurrentField(players, rows, cols, player1);
 
-            // Most updated move message via Websocket
+            // Most updated move message via Websocket (no need to reload page)
             play_socket.onmessage = function(message) {
                 var last_move = JSON.parse(message.data);
                 var last_move_row = last_move.row;
@@ -223,7 +222,7 @@
 {#            $.ajaxSetup({#}
 {#                headers: { "X-CSRFToken": getCookie("csrftoken") }#}
 {#            });#}
-
+            //Trigger event when placing a coin
             $("#board tr td button").click(function(e) {
                 e.preventDefault();
                 // Only allows player1 and player2 to make moves not anyone else

@@ -14,6 +14,7 @@ def ws_connect(message):
     # connect4/play/{game_id}/, and finds a Game if the coin path is applicable,
     # and if the Game exists. Otherwise, bails (meaning this is a some other sorts
     # of websocket). So, this is effectively a version of _get_object_or_404.
+    # Create a channel when a player joins a game
     game_id = message['path'].strip('/').split('/')[-1]
     game = Game.objects.get(id=game_id)
 

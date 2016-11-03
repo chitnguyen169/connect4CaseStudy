@@ -7,6 +7,7 @@ from models import Game
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
+
 # Create your views here.
 def login(request):
     """
