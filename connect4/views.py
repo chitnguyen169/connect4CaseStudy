@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate
 from django.contrib import auth
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -15,23 +16,30 @@ def login(request):
     :param request:
     :return:
     """
-    # Method=POST then validate user's login details, authenticate and redirect to games page
-    if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
-        username = request.POST.get('username', '')
-        password = request.POST.get('password', '')
-        if form.is_valid():
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                auth.login(request, user)
-                return redirect(games)
-    # Method = GET then display log in form
+    # If user has not logged out, direct to games page
+    if request.session.has_key('username'):
+        username = request.session['username']
+        return HttpResponseRedirect('/connect4/games/')
+    # Else when user logs in (method=POST), store session under username so next time even if user go to log in page,
+    #  it will automatically redirect to games page. Else display log in form
     else:
-        form = AuthenticationForm()
-    args = {}
-    args.update(csrf(request))
-    args['form'] = form
-    return render(request, 'login.html', args)
+        username = 'not logged in'
+        if request.method == 'POST':
+            form = AuthenticationForm(data=request.POST)
+            username = request.POST.get('username', '')
+            password = request.POST.get('password', '')
+            if form.is_valid():
+                user = authenticate(username=username, password=password)
+                if user is not None:
+                    auth.login(request, user)
+                    request.session['username'] = username
+                    return HttpResponseRedirect('/connect4/games/')
+        else:
+            form = AuthenticationForm()
+        args = {}
+        args.update(csrf(request))
+        args['form'] = form
+        return render(request, 'login.html', args)
 
 
 def logout(request):
@@ -40,7 +48,11 @@ def logout(request):
     :param request:
     :return:
     """
-    auth.logout(request)
+    try:
+        auth.logout(request)
+        del request.session['username']
+    except:
+        pass
     return redirect(login)
 
 
