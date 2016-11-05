@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    {# Show messages if form is not valid #}
+    {% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4 ">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading" style="background-color: #c0392b;">
+                        <center class="panel-title" style="color:white; font-family: 'Raleway', sans-serif;">
+                            Update Profile</center>
+                    </div>
+                    <div class="panel-body">
+                        <div id="user-profile">
+                            <p class="bs-component" id="user-profile">
+                                <table>
+                                    <tr>
+                                        <td>{{ form.username.label_tag }}</td>
+                                        <td style="text-align: center; width: 200px;" >{{ request.user.username }}</td>
+                                    <tr>
+                                        <td>{{ form.email.label_tag }} </td>
+                                        <td style="text-align: center; width: 200px;">{{ request.user.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ form.first_name.label_tag }}</td>
+                                        <td style="text-align: center; width: 200px;">{{ request.user.first_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ form.last_name.label_tag }} </td>
+                                        <td style="text-align: center; width: 200px;">{{ request.user.last_name }}</td>
+                                    </tr>
+                                </table>
+                            </p>
+                            <p class="bs-component">
+                                <center>
+                                    <input id ="update-profile" class="btn btn-success btn-md" type="submit" value="Edit My Profile" />
+                                </center>
+                            </p>
+                        </div>
+                        <form id="update-profile-form" method="post" action="." style="display: none;">{% csrf_token %}
+                            <p class="bs-component">
+                                <table>
+                                    <tr>
+                                        <td style="margin: 5px 5px 5px 5px; padding: 5px 5px 5px 5px;">{{ form.username.label_tag }}</td>
+                                        <td>{{request.user.username }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="margin: 5px 5px 5px 5px; padding: 5px 5px 5px 5px;">{{ form.email.label_tag }}</td>
+                                        <td>{{ form.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="margin: 5px 5px 5px 5px; padding: 5px 5px 5px 5px;">{{ form.first_name.label_tag }}</td>
+                                        <td>{{ form.first_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="margin: 5px 5px 5px 5px; padding: 5px 5px 5px 5px;">{{ form.last_name.label_tag }}</td>
+                                        <td>{{ form.last_name }}</td>
+                                    </tr>
+                                </table>
+                            </p>
+                            <p class="bs-component">
+                                <center>
+                                    <input class="btn btn-success btn-md" type="submit" value="Save" style="width:100px"/>
+                                    <input class="btn" id="cancel-update-profile" value="Cancel" style="width:100px; border: 1px solid black" />
+                                </center>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $('#update-profile').click(function() {
+            $('#user-profile').hide();
+            $('#update-profile-form').show()
+        })
+        $('#cancel-update-profile').click(function() {
+            $('#user-profile').show();
+            $('#update-profile-form').hide()
+        })
+    </script>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        {% if not request.user.is_authenticated %}
+            $('#games-btn').hide();
+            $("#create-game-btn").hide();
+            $("#user-account").hide();
+        {% endif %}
+    </script>
+{% endblock %}

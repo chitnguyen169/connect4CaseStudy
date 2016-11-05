@@ -1,8 +1,13 @@
 #main-navigation {
     background-color: #34495e;
+    height: 75px;
 }
+
+body {
+    font-family: 'Raleway', sans-serif;
+}
+
 #main-navigation h2 {
-	font-family: 'Raleway', sans-serif;
     color: #ecf0f1;
     margin-left: 475px;
 }
@@ -12,23 +17,27 @@
     color: #e67e22;
 }
 
-#create-game-btn {
+#games-btn {
+    margin-left: 185px;
     margin-top: 20px;
-    margin-left: 250px;
+}
+#create-game-btn {
+    margin-top: -72px;
+    margin-left: 287px;
 }
 /*CSS for input boxes in log in and sign up*/
 #sign-up-form input {
     border-radius: 8px;
     width: 200px;
     height: 28px;
-    border: none;
+    border: 1px solid #2980b9;
 }
 
 #log-in-form input {
     border-radius: 8px;
     width: 200px;
     height: 28px;
-    border: none;
+    border: 1px solid #2980b9;
     margin-left: 40px;
 }
 

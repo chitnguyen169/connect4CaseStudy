@@ -23,20 +23,21 @@
                                 {{ request.user.username }} <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">Settings</a></li>
+                                <li><a href="/connect4/settings/">Settings</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href = '/connect4/logout/'>Log Out</a></li>
                             </ul>
                           </li>
                         </ul>
                     </ul>
+                    <p class="bs-component">
+                        <input class="btn btn-primary btn-sm" id="games-btn" onclick="location.href = '/connect4/games/';"type="submit" value="Games Page" />
+                    </p>
                     <form method="post" action=".">
                     {% csrf_token %}
-                        <center>
-                            <p class="bs-component">
-                                <input class="btn btn-success btn-sm" id="create-game-btn" type="submit" value="Create Game" />
-                            </p>
-                        </center>
+                        <p class="bs-component">
+                            <input class="btn btn-success btn-sm" id="create-game-btn" type="submit" value="Create Game" />
+                        </p>
                     </form>
                 </div>
             </div>

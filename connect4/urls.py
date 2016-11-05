@@ -22,5 +22,9 @@ urlpatterns = [
     url(
         r'^play/(?P<game_id>\d+)/$',
         views.play
+    ),
+    url(
+        r'^settings/$',
+        views.settings
     )
 ]

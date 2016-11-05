@@ -26,7 +26,7 @@
                         <center class="panel-title" style="color:white; font-family: 'Raleway', sans-serif;">
                             Sign Up</center>
                     </div>
-                    <div class="panel-body" style="background-color: #bdc3c7;">
+                    <div class="panel-body" style="background-color: #ecf0f1;">
                         <form method="post" action=".">{% csrf_token %}
                             <p class="bs-component">
                                 <table>
@@ -66,6 +66,7 @@
 {% block javascript %}
     <script>
         {% if not request.user.is_authenticated %}
+            $('#games-btn').hide();
             $("#create-game-btn").hide();
             $("#user-account").hide();
         {% endif %}

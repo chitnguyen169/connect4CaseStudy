@@ -2,13 +2,6 @@
 {% load staticfiles %}
 
 {% block content %}
-    {% if request.user.is_authenticated %}
-        <p class="bs-component">
-            <center>
-                <input class="btn btn-success btn-sm" onclick="location.href = '/connect4/games/';"type="submit" value="Back to Games Page" />
-            </center>
-        </p>
-    {% endif %}
     <div class="col-md-3">
         <div class="panel panel-primary">
             <div class="panel-heading" style="font-weight: 700">You are in game #{{ game.id }}</div>
@@ -264,6 +257,7 @@
 {% block javascript %}
 <script>
     {% if not request.user.is_authenticated %}
+        $('#games-btn').hide();
         $("#create-game-btn").hide();
         $("#user-account").hide();
     {% endif %}

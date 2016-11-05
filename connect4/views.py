@@ -7,6 +7,9 @@ from django.core.context_processors import csrf
 from models import Game
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+import itertools
+from collections import Counter
+from . import forms
 
 
 # Create your views here.
@@ -95,10 +98,18 @@ def games(request):
                                               Q(player1=request.user) | Q(player2=request.user))
     concluded_games = Game.objects.all().filter(Q(status='Concluded'),
                                                 Q(player1=request.user) | Q(player2=request.user))
+    total_games = len(concluded_games)
+    total_wins = len(concluded_games.filter(winner=request.user))
+    total_draws = len(concluded_games.filter(winner='Draw'))
+    total_loses = total_games - total_wins - total_draws
     context = {'my_created_games': my_created_games,
                'open_games': open_games,
                'playing_games': playing_games,
-               'concluded_games': concluded_games}
+               'concluded_games': concluded_games,
+               'total_games': total_games,
+               'total_wins': total_wins,
+               'total_draws': total_draws,
+               'total_loses': total_loses}
     return render(request, 'game.html', context)
 
 
@@ -128,3 +139,24 @@ def play(request, game_id):
         'last_move': last_move
     }
     return render(request, 'play.html', context)
+
+
+@login_required(login_url='/connect4/login/')
+def settings(request):
+    # Get current username from session
+    username = request.session['username']
+    if request.method == 'POST':
+        # as request.POST is immutable, we don't want user to update username but want to send username as well.
+        # so need to create a copy data and then pass in username.
+        data = request.POST.copy()
+        data['username'] = username
+        form = forms.UserUpdateForm(data=data, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect(settings)
+    else:
+        form = forms.UserUpdateForm()
+    args = {}
+    args.update(csrf(request))
+    args['form'] = form
+    return render(request, 'settings.html', args)

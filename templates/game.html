@@ -10,7 +10,26 @@
             </center>
         </p>
     {% endif %}
-
+    <center>
+        <ul class="list-group">
+            <li class="list-group-item" style="width: 300px;">
+                <span class="badge">{{ total_games }}</span>
+                Total games
+            </li>
+            <li class="list-group-item" style="width: 300px;">
+                <span class="badge">{{ total_wins }}</span>
+                Total wins
+            </li>
+            <li class="list-group-item" style="width: 300px;">
+                <span class="badge">{{ total_draws }}</span>
+                Total draws
+            </li>
+             <li class="list-group-item" style="width: 300px;">
+                <span class="badge">{{ total_loses }}</span>
+                Total loses
+            </li>
+        </ul>
+    </center>
     <center style="margin-top: 55px;">
         <div class="col-md-3">
             <div class="panel panel-default">
@@ -86,6 +105,7 @@
 {% block javascript %}
 <script>
     {% if not request.user.is_authenticated %}
+        $('#games-btn').hide();
         $("#create-game-btn").hide();
         $("#user-account").hide();
     {% endif %}
