@@ -124,7 +124,8 @@ def play(request, game_id):
     game = Game.objects.get(id=game_id)
     if game.player1 != request.user:
         game.join_up(request.user)
-
+        game.status = "Playing"
+        game.save()
     coin_set = game.coin_set
     player_turns = [coin.player_id for coin in game.coin_set.all()]
     rows = [coin.row for coin in game.coin_set.all()]

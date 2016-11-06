@@ -37,8 +37,6 @@ class Game(models.Model):
     def join_up(self, player_2):
         if self.player2 is None:
             self.player2 = player_2
-            self.status = "Playing"
-            self.save()
             return True
         else:
             return False
@@ -65,9 +63,4 @@ class Coin(models.Model):
     created_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return ' '.join([
-            self.player, 'to', self.row, self.column
-        ])
-
-    def as_dict(self):
-        return {'row': self.row, 'column': self.column}
+        return '%s to row %s and col %s' % (self.player.get_short_name(), self.row, self.column)

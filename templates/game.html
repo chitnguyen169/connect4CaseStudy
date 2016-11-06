@@ -11,6 +11,12 @@
         </p>
     {% endif %}
     <center>
+        <form method="post" action=".">
+            {% csrf_token %}
+            <p class="bs-component">
+                <input class="btn btn-success btn-sm" id="create-game-btn" type="submit" value="Create Game" />
+            </p>
+        </form>
         <ul class="list-group">
             <li class="list-group-item" style="width: 300px;">
                 <span class="badge">{{ total_games }}</span>
