@@ -37,6 +37,8 @@ class Game(models.Model):
     def join_up(self, player_2):
         if self.player2 is None:
             self.player2 = player_2
+            self.status = "Playing"
+            self.save()
             return True
         else:
             return False
