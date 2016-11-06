@@ -52,8 +52,8 @@
         <div class="col-md-3">
             <div class="panel panel-info">
                 <div class="panel-heading" style="font-weight: 700">Available To Join Now</div>
-                    {% for game in open_games %}
-                        <ul class="list-group">
+                    <ul class="list-group">
+                        {% for game in open_games %}
                             <li  class="list-group-item">
                                 <p style="color:green;">Join <b>{{ game.player1.username }}</b> now!</p>
                                 <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#join-game-modal">Join Now</button>
@@ -77,8 +77,8 @@
                                   </div>
                                 </div>
                             </li>
-                        </ul>
-                    {% endfor %}
+                        {% endfor %}
+                    </ul>
             </div>
         </div>
         <div class="col-md-3">
