@@ -62,7 +62,6 @@
      <script>
         {% if not request.user.is_authenticated %}
             $('#games-btn').hide();
-            $("#create-game-btn").hide();
             $("#user-account").hide();
         {% endif %}
     </script>

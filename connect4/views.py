@@ -7,8 +7,6 @@ from django.core.context_processors import csrf
 from models import Game
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-import itertools
-from collections import Counter
 from . import forms
 
 
